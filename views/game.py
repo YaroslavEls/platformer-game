@@ -23,10 +23,14 @@ class GameView(View):
         self.end_of_map = 0
 
         self.score = 0
+        self.reset_score = True
+        self.level = 1
+        self.lives = 3
         self.selected_player = 'male_adventurer'
 
         self.jump_sound = arcade.load_sound(":resources:sounds/jump1.wav")
         self.coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
+        self.death_sound = arcade.load_sound(":resources:sounds/gameover3.wav")
 
     def setup(self):
         super().setup()
@@ -52,13 +56,20 @@ class GameView(View):
             LAYER_NAME_COINS: {
                 "use_spatial_hash": True,
             },
+            LAYER_NAME_DEATH: {
+                "use_spatial_hash": True,
+            },
         }
 
         self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
-        self.score = 0
+        if self.reset_score:
+            self.score = 0
+        self.reset_score = True
+
+        self.scene.add_sprite_list_after(LAYER_NAME_PLAYER, LAYER_NAME_BACKGROUND)
 
         self.player_sprite = Player(self.selected_player)
         self.player_sprite.center_x = (
@@ -87,9 +98,9 @@ class GameView(View):
         self.scene.draw()
         self.gui_camera.use()
 
-        score_text = f"Score: {self.score}"
+        text = f"Score: {self.score}, Level: {self.level}, Lives: {self.lives}"
         arcade.draw_text(
-            score_text,
+            text,
             10,
             10,
             arcade.csscolor.BLACK,
@@ -158,6 +169,8 @@ class GameView(View):
             screen_center_x = 0
         if screen_center_y < 0:
             screen_center_y = 0
+        if screen_center_x > (self.end_of_map - self.camera.viewport_width):
+            screen_center_x = (self.end_of_map - self.camera.viewport_width)
         player_centered = screen_center_x, screen_center_y
 
         self.camera.move_to(player_centered)
@@ -187,15 +200,35 @@ class GameView(View):
         collision_list = arcade.check_for_collision_with_lists(
             self.player_sprite, 
             [
-                self.scene[LAYER_NAME_COINS]
+                self.scene[LAYER_NAME_COINS],
+                self.scene[LAYER_NAME_DEATH],
+                self.scene[LAYER_NAME_FINISH]
             ]
         )
 
         for collision in collision_list:
-            points = int(collision.properties["Points"])
-            self.score += points
+            if self.scene.get_sprite_list(LAYER_NAME_DEATH) in collision.sprite_lists:
+                if self.lives > 1:
+                    self.reset_score = False
+                    self.lives -= 1
+                else:
+                    self.lives = 3
+                    self.level = 1
+                self.setup()
+                arcade.play_sound(self.death_sound)
+            elif self.scene.get_sprite_list(LAYER_NAME_FINISH) in collision.sprite_lists:
+                self.level += 1
+                self.reset_score = False
+                self.setup()
+            elif self.scene.get_sprite_list(LAYER_NAME_COINS) in collision.sprite_lists:
+                points = int(collision.properties["Points"])
+                self.score += points
 
-            collision.remove_from_sprite_lists()
-            arcade.play_sound(self.coin_sound)
+                collision.remove_from_sprite_lists()
+                arcade.play_sound(self.coin_sound)
+
+        if self.player_sprite.center_y < -100:
+            self.setup()
+            arcade.play_sound(self.death_sound)
 
         self.center_camera_to_player()
