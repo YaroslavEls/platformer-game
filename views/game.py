@@ -1,8 +1,12 @@
+import math
+
 import arcade
 
 from constants import *
 from entities.player import Player
+from entities.enemy import Enemy
 from views.view import View
+
 
 class GameView(View):
     def __init__(self):
@@ -81,6 +85,26 @@ class GameView(View):
         self.scene.add_sprite(LAYER_NAME_PLAYER, self.player_sprite)
 
         self.end_of_map = self.tile_map.tiled_map.map_size.width * GRID_PIXEL_SIZE
+
+        enemies_layer = self.tile_map.object_lists[LAYER_NAME_ENEMIES]
+
+        for object in enemies_layer:
+            cartesian = self.tile_map.get_cartesian(
+                object.shape[0], object.shape[1]
+            )
+            enemy_type = object.properties["type"]
+            enemy = Enemy(enemy_type)
+            enemy.center_x = math.floor(
+                cartesian[0] * TILE_SCALING * self.tile_map.tile_width
+            )
+            enemy.center_y = math.floor(
+                (cartesian[1] + 1) * (self.tile_map.tile_height * TILE_SCALING)
+            )
+            if object.properties["change_x"]:
+                enemy.change_x = int(object.properties["change_x"])
+                enemy.boundary_left = int(object.properties["boundary_left"])
+                enemy.boundary_right = int(object.properties["boundary_right"])
+            self.scene.add_sprite(LAYER_NAME_ENEMIES, enemy)
 
         if self.tile_map.tiled_map.background_color:
             arcade.set_background_color(self.tile_map.tiled_map.background_color)
@@ -193,21 +217,43 @@ class GameView(View):
         self.scene.update_animation(
             delta_time,
             [
-                LAYER_NAME_PLAYER
+                LAYER_NAME_PLAYER,
+                LAYER_NAME_ENEMIES
             ],
         )
+
+        self.scene.update(
+            [LAYER_NAME_ENEMIES]
+        )
+
+        for enemy in self.scene.get_sprite_list(LAYER_NAME_ENEMIES):
+            if (
+                enemy.boundary_right
+                and enemy.right > enemy.boundary_right
+                and enemy.change_x > 0
+            ):
+                enemy.change_x *= -1
+
+            if (
+                enemy.boundary_left
+                and enemy.left < enemy.boundary_left
+                and enemy.change_x < 0
+            ):
+                enemy.change_x *= -1
 
         collision_list = arcade.check_for_collision_with_lists(
             self.player_sprite, 
             [
-                self.scene[LAYER_NAME_COINS],
                 self.scene[LAYER_NAME_DEATH],
-                self.scene[LAYER_NAME_FINISH]
+                self.scene[LAYER_NAME_ENEMIES],
+                self.scene[LAYER_NAME_FINISH],
+                self.scene[LAYER_NAME_COINS]
             ]
         )
 
         for collision in collision_list:
-            if self.scene.get_sprite_list(LAYER_NAME_DEATH) in collision.sprite_lists:
+            if self.scene.get_sprite_list(LAYER_NAME_DEATH) in collision.sprite_lists \
+               or self.scene.get_sprite_list(LAYER_NAME_ENEMIES) in collision.sprite_lists:
                 if self.lives > 1:
                     self.reset_score = False
                     self.lives -= 1
