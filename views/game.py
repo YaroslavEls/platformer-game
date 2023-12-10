@@ -29,8 +29,9 @@ class GameView(View):
         self.score = 0
         self.reset_score = True
         self.level = 1
-        self.lives = 3
-        self.selected_player = 'male_adventurer'
+        self.lives = 0
+        self.selected_player = None
+        self.difficulty = None
 
         self.jump_sound = arcade.load_sound(":resources:sounds/jump1.wav")
         self.coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
@@ -70,6 +71,10 @@ class GameView(View):
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
         if self.reset_score:
+            if self.difficulty == 'hard':
+                self.lives = 1
+            else:
+                self.lives = 3
             self.score = 0
         self.reset_score = True
 
@@ -115,6 +120,9 @@ class GameView(View):
             walls=self.scene[LAYER_NAME_PLATFORMS],
             ladders=self.scene[LAYER_NAME_LADDERS],
         )
+
+    def on_show_view(self):
+        arcade.set_background_color(self.tile_map.background_color)
 
     def on_draw(self):
         arcade.start_render()
@@ -168,6 +176,9 @@ class GameView(View):
             self.left_pressed = True
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.right_pressed = True
+
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(self.window.views['pause'])
 
         self.process_keychange()
 
@@ -254,14 +265,13 @@ class GameView(View):
         for collision in collision_list:
             if self.scene.get_sprite_list(LAYER_NAME_DEATH) in collision.sprite_lists \
                or self.scene.get_sprite_list(LAYER_NAME_ENEMIES) in collision.sprite_lists:
+                arcade.play_sound(self.death_sound)
                 if self.lives > 1:
                     self.reset_score = False
                     self.lives -= 1
+                    self.setup()
                 else:
-                    self.lives = 3
-                    self.level = 1
-                self.setup()
-                arcade.play_sound(self.death_sound)
+                    self.window.show_view(self.window.views['ending'])
             elif self.scene.get_sprite_list(LAYER_NAME_FINISH) in collision.sprite_lists:
                 self.level += 1
                 self.reset_score = False
