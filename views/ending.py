@@ -10,6 +10,8 @@ class EndingView(View):
 
         self.v_box = None
 
+        self.success = None
+
     def setup(self):
         super().setup()
         self.ui_manager = arcade.gui.UIManager()
@@ -46,7 +48,7 @@ class EndingView(View):
         arcade.start_render()
 
         arcade.draw_text(
-            'Game Over',
+            'Congratulations!' if self.success else 'Game Over',
             self.window.width / 2,
             self.window.height - 125,
             arcade.color.BLACK,

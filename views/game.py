@@ -17,6 +17,7 @@ class GameView(View):
         self.up_pressed = False
         self.down_pressed = False
         self.jump_needs_reset = False
+        self.shoot_pressed = False
 
         self.tile_map = None
         self.scene = None
@@ -25,6 +26,9 @@ class GameView(View):
         self.camera = None
         self.gui_camera = None
         self.end_of_map = 0
+
+        self.can_shoot = False
+        self.shoot_timer = 0
 
         self.score = 0
         self.reset_score = True
@@ -36,6 +40,8 @@ class GameView(View):
         self.jump_sound = arcade.load_sound(":resources:sounds/jump1.wav")
         self.coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
         self.death_sound = arcade.load_sound(":resources:sounds/gameover3.wav")
+        self.shoot_sound = arcade.load_sound(":resources:sounds/hurt2.wav")
+        self.hit_sound = arcade.load_sound(":resources:sounds/hit3.wav")
 
     def setup(self):
         super().setup()
@@ -45,6 +51,7 @@ class GameView(View):
         self.up_pressed = False
         self.down_pressed = False
         self.jump_needs_reset = False
+        self.shoot_pressed = False
 
         self.camera = arcade.Camera(self.window.width, self.window.height)
         self.gui_camera = arcade.Camera(self.window.width, self.window.height)
@@ -78,6 +85,9 @@ class GameView(View):
             self.score = 0
         self.reset_score = True
 
+        self.can_shoot = True
+        self.shoot_timer = 0
+
         self.scene.add_sprite_list_after(LAYER_NAME_PLAYER, LAYER_NAME_BACKGROUND)
 
         self.player_sprite = Player(self.selected_player)
@@ -98,7 +108,8 @@ class GameView(View):
                 object.shape[0], object.shape[1]
             )
             enemy_type = object.properties["type"]
-            enemy = Enemy(enemy_type)
+            enemy_health = 1 if self.difficulty == 'easy' else int(object.properties["health"])
+            enemy = Enemy(enemy_type, enemy_health)
             enemy.center_x = math.floor(
                 cartesian[0] * TILE_SCALING * self.tile_map.tile_width
             )
@@ -110,6 +121,8 @@ class GameView(View):
                 enemy.boundary_left = int(object.properties["boundary_left"])
                 enemy.boundary_right = int(object.properties["boundary_right"])
             self.scene.add_sprite(LAYER_NAME_ENEMIES, enemy)
+
+        self.scene.add_sprite_list(LAYER_NAME_BULLETS)
 
         if self.tile_map.tiled_map.background_color:
             arcade.set_background_color(self.tile_map.tiled_map.background_color)
@@ -177,6 +190,9 @@ class GameView(View):
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.right_pressed = True
 
+        if key == arcade.key.Q:
+            self.shoot_pressed = True
+
         if key == arcade.key.ESCAPE:
             self.window.show_view(self.window.views['pause'])
 
@@ -192,6 +208,9 @@ class GameView(View):
             self.left_pressed = False
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.right_pressed = False
+
+        if key == arcade.key.Q:
+            self.shoot_pressed = False
 
         self.process_keychange()
 
@@ -210,6 +229,16 @@ class GameView(View):
 
         self.camera.move_to(player_centered)
 
+    def process_death(self):
+        arcade.play_sound(self.death_sound)
+        if self.lives > 1:
+            self.reset_score = False
+            self.lives -= 1
+            self.setup()
+        else:
+            self.window.views['ending'].success = False
+            self.window.show_view(self.window.views['ending'])
+
     def on_update(self, delta_time):
         self.physics_engine.update()
 
@@ -225,6 +254,31 @@ class GameView(View):
             self.player_sprite.is_on_ladder = False
             self.process_keychange()
 
+        if self.can_shoot:
+            if self.shoot_pressed:
+                arcade.play_sound(self.shoot_sound)
+                bullet = arcade.Sprite(
+                    ":resources:images/space_shooter/laserBlue01.png",
+                    SPRITE_SCALING_LASER,
+                )
+
+                if self.player_sprite.facing_direction == RIGHT_FACING:
+                    bullet.change_x = BULLET_SPEED
+                else:
+                    bullet.change_x = -BULLET_SPEED
+
+                bullet.center_x = self.player_sprite.center_x
+                bullet.center_y = self.player_sprite.center_y
+
+                self.scene.add_sprite(LAYER_NAME_BULLETS, bullet)
+
+                self.can_shoot = False
+        else:
+            self.shoot_timer += 1
+            if self.shoot_timer == SHOOT_SPEED:
+                self.can_shoot = True
+                self.shoot_timer = 0
+
         self.scene.update_animation(
             delta_time,
             [
@@ -234,7 +288,10 @@ class GameView(View):
         )
 
         self.scene.update(
-            [LAYER_NAME_ENEMIES]
+            [
+                LAYER_NAME_ENEMIES,
+                LAYER_NAME_BULLETS
+            ]
         )
 
         for enemy in self.scene.get_sprite_list(LAYER_NAME_ENEMIES):
@@ -252,6 +309,30 @@ class GameView(View):
             ):
                 enemy.change_x *= -1
 
+        for bullet in self.scene.get_sprite_list(LAYER_NAME_BULLETS):
+            hit_list = arcade.check_for_collision_with_lists(
+                bullet,
+                [
+                    self.scene[LAYER_NAME_ENEMIES],
+                    self.scene[LAYER_NAME_PLATFORMS]
+                ]
+            )
+            
+            if hit_list:
+                bullet.remove_from_sprite_lists()
+                for collision in hit_list:
+                    if (self.scene.get_sprite_list(LAYER_NAME_ENEMIES)
+                        in collision.sprite_lists):
+                        collision.health -= BULLET_DAMAGE
+                        if collision.health <= 0:
+                            collision.remove_from_sprite_lists()
+                            self.score += 15
+                        arcade.play_sound(self.hit_sound)
+
+            if (bullet.right < 0) or (bullet.left > 
+               (self.tile_map.width * self.tile_map.tile_width) * TILE_SCALING):
+                bullet.remove_from_sprite_lists()
+
         collision_list = arcade.check_for_collision_with_lists(
             self.player_sprite, 
             [
@@ -265,26 +346,22 @@ class GameView(View):
         for collision in collision_list:
             if self.scene.get_sprite_list(LAYER_NAME_DEATH) in collision.sprite_lists \
                or self.scene.get_sprite_list(LAYER_NAME_ENEMIES) in collision.sprite_lists:
-                arcade.play_sound(self.death_sound)
-                if self.lives > 1:
-                    self.reset_score = False
-                    self.lives -= 1
-                    self.setup()
-                else:
-                    self.window.show_view(self.window.views['ending'])
+                self.process_death()
             elif self.scene.get_sprite_list(LAYER_NAME_FINISH) in collision.sprite_lists:
-                self.level += 1
-                self.reset_score = False
-                self.setup()
+                if self.level == 1:
+                    self.window.views['ending'].success = True
+                    self.window.show_view(self.window.views['ending'])
+                else:
+                    self.level += 1
+                    self.reset_score = False
+                    self.setup()
             elif self.scene.get_sprite_list(LAYER_NAME_COINS) in collision.sprite_lists:
                 points = int(collision.properties["Points"])
                 self.score += points
-
                 collision.remove_from_sprite_lists()
                 arcade.play_sound(self.coin_sound)
 
         if self.player_sprite.center_y < -100:
-            self.setup()
-            arcade.play_sound(self.death_sound)
+            self.process_death()
 
         self.center_camera_to_player()
