@@ -1,3 +1,5 @@
+import os
+
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 SCREEN_TITLE = 'Platformer Game'
@@ -22,25 +24,33 @@ PLAYER_START_Y = 1
 RIGHT_FACING = 0
 LEFT_FACING = 1
 
-LEVELS_COUNT = 6
-MAP_NAME = lambda x: f':resources:tiled_maps/level_{x}.json'
+CWD = os.getcwd()
+ASSETS_PATH = os.path.join(CWD, 'assets')
 
-LAYER_NAME_PLATFORMS = "Platforms"
-LAYER_NAME_MOVING_PLATFORMS = "Moving Platforms"
-LAYER_NAME_BACKGROUND = "Background"
-LAYER_NAME_FOREGROUND = "Foreground"
-LAYER_NAME_LADDERS = "Ladders"
-LAYER_NAME_COINS = "Coins"
-LAYER_NAME_DEATH = "Death"
-LAYER_NAME_FINISH = "Finish"
-LAYER_NAME_ENEMIES = "Enemies"
-LAYER_NAME_PLAYER = "Player"
-LAYER_NAME_BULLETS = "Bullets"
-LAYER_NAME_KEYS = "Keys"
-LAYER_NAME_LOCKS = "Locks"
+LEVELS_COUNT = 3
+MAP_NAME = lambda x: f'{ASSETS_PATH}/maps/level_{x}.json'
 
-JUMP_SOUND_PATH = ":resources:sounds/jump1.wav"
-COIN_SOUND_PATH = ":resources:sounds/coin1.wav"
-DEATH_SOUND_PATH = ":resources:sounds/gameover3.wav"
-SHOOT_SOUND_PATH = ":resources:sounds/hurt2.wav"
-HIT_SOUND_PATH = ":resources:sounds/hit3.wav"
+LAYER_NAME_BACKGROUND = 'Background'
+LAYER_NAME_PLATFORMS = 'Platforms'
+LAYER_NAME_LADDERS = 'Ladders'
+LAYER_NAME_MOVING_PLATFORMS = 'Moving Platforms'
+LAYER_NAME_FINISH = 'Finish'
+LAYER_NAME_LOCKS = 'Locks'
+LAYER_NAME_KEYS = 'Keys'
+LAYER_NAME_COINS = 'Coins'
+LAYER_NAME_ENEMIES = 'Enemies'
+LAYER_NAME_DEATH = 'Death'
+LAYER_NAME_PLAYER = 'Player'
+LAYER_NAME_BULLETS = 'Bullets'
+
+CHARACTER1_NAME = 'female_adventurer'
+CHARACTER2_NAME = 'male_adventurer'
+
+JUMP_SOUND_PATH = f'{ASSETS_PATH}/sounds/jump.wav'
+COIN_SOUND_PATH = f'{ASSETS_PATH}/sounds/coin.wav'
+KEY_SOUND_PATH = f'{ASSETS_PATH}/sounds/key.wav'
+DEATH_SOUND_PATH = f'{ASSETS_PATH}/sounds/gameover.wav'
+SHOOT_SOUND_PATH = f'{ASSETS_PATH}/sounds/hurt.wav'
+HIT_SOUND_PATH = f'{ASSETS_PATH}/sounds/hit.wav'
+
+LASER_IMAGE_PATH = f'{ASSETS_PATH}/images/effects/laser.png'

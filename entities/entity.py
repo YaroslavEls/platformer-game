@@ -1,6 +1,6 @@
 import arcade
 
-from constants import RIGHT_FACING, CHARACTER_SCALING
+from constants import RIGHT_FACING, CHARACTER_SCALING, ASSETS_PATH
 
 
 def load_texture_pair(filename):
@@ -18,7 +18,7 @@ class Entity(arcade.Sprite):
         self.cur_texture = 0
         self.scale = CHARACTER_SCALING
 
-        path = f':resources:images/animated_characters/{name}'
+        path = f'{ASSETS_PATH}/images/characters/{name}'
 
         self.idle_texture_pair = load_texture_pair(f'{path}/{name}_idle.png')
         self.jump_texture_pair = load_texture_pair(f'{path}/{name}_jump.png')

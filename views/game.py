@@ -34,20 +34,19 @@ class GameView(View):
         self.difficulty: str
         self.lives: int
 
-        self.score: int = 0
-        self.reset_score: bool = True
-        self.level: int = 1
-        
+        self.level: int
+        self.score: int
         self.keys: list
         self.lock_pairs: dict
 
+        self.reset: bool = True
+
         self.jump_sound = arcade.load_sound(JUMP_SOUND_PATH)
         self.coin_sound = arcade.load_sound(COIN_SOUND_PATH)
+        self.key_sound = arcade.load_sound(KEY_SOUND_PATH)
         self.death_sound = arcade.load_sound(DEATH_SOUND_PATH)
         self.shoot_sound = arcade.load_sound(SHOOT_SOUND_PATH)
         self.hit_sound = arcade.load_sound(HIT_SOUND_PATH)
-
-    #----- HELPER FUNCTIONS FOR setup() -----#
 
     def _setup_player(self):
         self.player_sprite = Player(self.selected_player)
@@ -62,9 +61,6 @@ class GameView(View):
         self.scene.add_sprite(LAYER_NAME_PLAYER, self.player_sprite)
 
     def _setup_enemies(self):
-        if LAYER_NAME_ENEMIES not in self.tile_map.object_lists:
-            return
-
         enemies_layer = self.tile_map.object_lists[LAYER_NAME_ENEMIES]
         
         for object in enemies_layer:
@@ -84,14 +80,12 @@ class GameView(View):
                 (cartesian[1]+1) * TILE_SCALING * self.tile_map.tile_height
             )
 
-            if bool(object.properties["change_x"]):
+            if bool(int(object.properties["change_x"])):
                 enemy.change_x = int(object.properties["change_x"])
                 enemy.boundary_left = int(object.properties["boundary_left"])
                 enemy.boundary_right = int(object.properties["boundary_right"])
             
             self.scene.add_sprite(LAYER_NAME_ENEMIES, enemy)
-
-    #----- BASIC SETUP FUNCTIONS -----#
 
     def setup(self):
         super().setup()
@@ -103,6 +97,15 @@ class GameView(View):
         self.jump_needs_reset = False
         self.shoot_pressed = False
 
+        if self.reset:
+            if self.difficulty == 'hard':
+                self.lives = 1
+            else:
+                self.lives = 3
+            self.level = 1
+            self.score = 0
+        self.reset = True
+
         self.camera = arcade.Camera(self.window.width, self.window.height)
         self.gui_camera = arcade.Camera(self.window.width, self.window.height)
 
@@ -112,14 +115,6 @@ class GameView(View):
         self.can_shoot = True
         self.shoot_timer = 0
         self.end_of_map = self.tile_map.tiled_map.map_size.width * GRID_PIXEL_SIZE
-
-        if self.reset_score:
-            if self.difficulty == 'hard':
-                self.lives = 1
-            else:
-                self.lives = 3
-            self.score = 0
-        self.reset_score = True
 
         self.keys = []
         self.lock_pairs = {}
@@ -140,7 +135,10 @@ class GameView(View):
             walls=self.scene[LAYER_NAME_PLATFORMS]
         )
 
-        arcade.set_background_color(self.tile_map.tiled_map.background_color)
+        arcade.set_background_color(self.tile_map.background_color)
+
+    def on_show_view(self):
+        arcade.set_background_color(self.tile_map.background_color)
 
     def on_draw(self):
         arcade.start_render()
@@ -158,8 +156,6 @@ class GameView(View):
             color=arcade.csscolor.BLACK,
             font_size=18
         )
-
-    #----- KEYS HANDLING -----#
 
     def process_keychange(self):
         if self.up_pressed and not self.down_pressed:
@@ -225,8 +221,6 @@ class GameView(View):
 
         self.process_keychange()
 
-    #----- HELPER FUCTIONS FOR on_update -----#
-
     def _update_player_animations(self):
         self.player_sprite.can_jump = not self.physics_engine.can_jump()
 
@@ -247,10 +241,7 @@ class GameView(View):
             return
 
         arcade.play_sound(self.shoot_sound)
-        bullet = arcade.Sprite(
-            ":resources:images/space_shooter/laserBlue01.png",
-            SPRITE_SCALING_LASER,
-        )
+        bullet = arcade.Sprite(LASER_IMAGE_PATH, SPRITE_SCALING_LASER)
 
         if self.player_sprite.facing_direction == RIGHT_FACING:
             bullet.change_x = BULLET_SPEED
@@ -351,7 +342,7 @@ class GameView(View):
             self.window.show_view(self.window.views['ending'])
             return
         
-        self.reset_score = False
+        self.reset = False
         self.lives -= 1
         self.setup()
 
@@ -362,7 +353,7 @@ class GameView(View):
             return
 
         self.level += 1
-        self.reset_score = False
+        self.reset = False
         self.setup()
 
     def _process_coin_pick_up(self, coll):
@@ -374,6 +365,7 @@ class GameView(View):
     def _process_key_pick_up(self, coll):
         self.keys.append(coll.properties["color"])
         coll.remove_from_sprite_lists()
+        arcade.play_sound(self.key_sound)
 
     def _process_lock_collision(self, coll):
         if coll.properties["color"] not in self.keys:
@@ -423,8 +415,6 @@ class GameView(View):
         
         player_centered = screen_center_x, screen_center_y
         self.camera.move_to(player_centered)
-
-    #-----------------------------------------#
 
     def on_update(self, delta_time):
         self.physics_engine.update()

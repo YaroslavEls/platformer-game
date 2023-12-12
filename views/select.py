@@ -1,6 +1,7 @@
 import arcade
 import arcade.gui
 
+from constants import ASSETS_PATH, CHARACTER1_NAME, CHARACTER2_NAME
 from views.view import View
 
 
@@ -47,29 +48,31 @@ class SelectView(View):
         )
 
     def setup_buttons(self):
-        image_path = ':resources:images/animated_characters'
+        image_path = f'{ASSETS_PATH}/images/characters'
         self.h_box_upper = arcade.gui.UIBoxLayout(vertical=False)
         self.h_box_middle = arcade.gui.UIBoxLayout(vertical=False)
         self.h_box_lower = arcade.gui.UIBoxLayout(vertical=False)
 
-        character_one_image = f'{image_path}/female_adventurer/female_adventurer_idle.png'
+        character_one_image = (
+            f'{image_path}/{CHARACTER1_NAME}/{CHARACTER1_NAME}_idle.png')
         character_one_texture = arcade.load_texture(character_one_image)
         character_one_button = arcade.gui.UITextureButton(
             texture=character_one_texture, width=96, height=128
         )
         @character_one_button.event("on_click")
         def on_click_character_one(event):
-            self.selected_player = 'female_adventurer'
+            self.selected_player = CHARACTER1_NAME
         self.h_box_upper.add(character_one_button.with_space_around(right=20))
 
-        character_two_image = f'{image_path}/male_adventurer/male_adventurer_idle.png'
+        character_two_image = (
+            f'{image_path}/{CHARACTER2_NAME}/{CHARACTER2_NAME}_idle.png')
         character_two_texture = arcade.load_texture(character_two_image)
         character_two_button = arcade.gui.UITextureButton(
             texture=character_two_texture, width=96, height=128
         )
         @character_two_button.event("on_click")
         def on_click_character_two(event):
-            self.selected_player = 'male_adventurer'
+            self.selected_player = CHARACTER2_NAME
         self.h_box_upper.add(character_two_button.with_space_around(right=20))
 
         easy_button = arcade.gui.UIFlatButton(text="Easy", width=200, style={
