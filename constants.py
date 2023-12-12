@@ -3,7 +3,7 @@ SCREEN_HEIGHT = 768
 SCREEN_TITLE = 'Platformer Game'
 
 TILE_SCALING = 0.5
-CHARACTER_SCALING = TILE_SCALING * 1.5
+CHARACTER_SCALING = TILE_SCALING * 2
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
 
@@ -22,7 +22,11 @@ PLAYER_START_Y = 1
 RIGHT_FACING = 0
 LEFT_FACING = 1
 
+LEVELS_COUNT = 6
+MAP_NAME = lambda x: f':resources:tiled_maps/level_{x}.json'
+
 LAYER_NAME_PLATFORMS = "Platforms"
+LAYER_NAME_MOVING_PLATFORMS = "Moving Platforms"
 LAYER_NAME_BACKGROUND = "Background"
 LAYER_NAME_FOREGROUND = "Foreground"
 LAYER_NAME_LADDERS = "Ladders"
@@ -32,3 +36,11 @@ LAYER_NAME_FINISH = "Finish"
 LAYER_NAME_ENEMIES = "Enemies"
 LAYER_NAME_PLAYER = "Player"
 LAYER_NAME_BULLETS = "Bullets"
+LAYER_NAME_KEYS = "Keys"
+LAYER_NAME_LOCKS = "Locks"
+
+JUMP_SOUND_PATH = ":resources:sounds/jump1.wav"
+COIN_SOUND_PATH = ":resources:sounds/coin1.wav"
+DEATH_SOUND_PATH = ":resources:sounds/gameover3.wav"
+SHOOT_SOUND_PATH = ":resources:sounds/hurt2.wav"
+HIT_SOUND_PATH = ":resources:sounds/hit3.wav"
