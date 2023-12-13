@@ -889,6 +889,15 @@
          "imagewidth":128
         }, 
         {
+         "animation":[
+                {
+                 "duration":100,
+                 "tileid":144
+                }, 
+                {
+                 "duration":100,
+                 "tileid":145
+                }],
          "id":144,
          "image":"..\/images\/tiles\/torch1.png",
          "imageheight":128,

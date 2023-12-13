@@ -30,7 +30,7 @@ ASSETS_PATH = os.path.join(CWD, 'assets')
 LEVELS_COUNT = 3
 MAP_NAME = lambda x: f'{ASSETS_PATH}/maps/level_{x}.json'
 
-LAYER_NAME_BACKGROUND = 'Background'
+LAYER_NAME_FOREGROUND = 'Foreground'
 LAYER_NAME_PLATFORMS = 'Platforms'
 LAYER_NAME_LADDERS = 'Ladders'
 LAYER_NAME_MOVING_PLATFORMS = 'Moving Platforms'
@@ -40,6 +40,7 @@ LAYER_NAME_KEYS = 'Keys'
 LAYER_NAME_COINS = 'Coins'
 LAYER_NAME_ENEMIES = 'Enemies'
 LAYER_NAME_DEATH = 'Death'
+LAYER_NAME_BACKGROUND = 'Background'
 LAYER_NAME_PLAYER = 'Player'
 LAYER_NAME_BULLETS = 'Bullets'
 
@@ -53,4 +54,5 @@ DEATH_SOUND_PATH = f'{ASSETS_PATH}/sounds/gameover.wav'
 SHOOT_SOUND_PATH = f'{ASSETS_PATH}/sounds/hurt.wav'
 HIT_SOUND_PATH = f'{ASSETS_PATH}/sounds/hit.wav'
 
+KEY_IMAGE_PATH = lambda x: f'{ASSETS_PATH}/images/items/key{x.capitalize()}.png'
 LASER_IMAGE_PATH = f'{ASSETS_PATH}/images/effects/laser.png'

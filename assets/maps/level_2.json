@@ -5,6 +5,20 @@
  "layers":[
         {
          "compression":"zlib",
+         "data":"eJxjYBgFo2AUjIJRMApGwSgYBbQCAWTKE9KHTy0+vaSYO1AAAMAvAeE=",
+         "encoding":"base64",
+         "height":17,
+         "id":3,
+         "name":"Background",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":40,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "compression":"zlib",
          "data":"eJxjYBgFo2AUjIJRQEtghoRHwSgYBaNguAEzBuqXcwCXhQF7",
          "encoding":"base64",
          "height":17,
@@ -46,12 +60,12 @@
                         {
                          "name":"health",
                          "type":"string",
-                         "value":"50"
+                         "value":"75"
                         }, 
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"zombie"
+                         "value":"robot"
                         }],
                  "rotation":0,
                  "type":"",
@@ -384,11 +398,11 @@
         }, 
         {
          "compression":"zlib",
-         "data":"eJxjYBgFo2AUjIJRMApGwSgYBbQCAWTKE9KHTy0+vaSYO1AAAMAvAeE=",
+         "data":"eJztwTEBAAAAwqD1T20ND6AAAODHAAqgAAE=",
          "encoding":"base64",
          "height":17,
-         "id":3,
-         "name":"Background",
+         "id":12,
+         "name":"Foreground",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
@@ -396,7 +410,7 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":12,
+ "nextlayerid":13,
  "nextobjectid":10,
  "orientation":"orthogonal",
  "renderorder":"right-down",

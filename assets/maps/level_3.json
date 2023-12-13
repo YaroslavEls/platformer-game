@@ -5,6 +5,20 @@
  "layers":[
         {
          "compression":"zlib",
+         "data":"eJxjYBgFo2AUjIJRMAoIA3Y0PNjAYHffUAQVONik6CNXTwUSRldDjvn0BgBNLARx",
+         "encoding":"base64",
+         "height":15,
+         "id":3,
+         "name":"Background",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":40,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "compression":"zlib",
          "data":"eJxjYBgFo2AUjIKRA6qQ8CgYBcMFTAXiaWh46oC6CBVMwYGpDZDzNnpep3e+BwCGbAu\/",
          "encoding":"base64",
          "height":15,
@@ -84,12 +98,12 @@
                         {
                          "name":"health",
                          "type":"string",
-                         "value":"50"
+                         "value":"75"
                         }, 
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"zombie"
+                         "value":"robot"
                         }],
                  "rotation":0,
                  "type":"",
@@ -122,12 +136,12 @@
                         {
                          "name":"health",
                          "type":"string",
-                         "value":"50"
+                         "value":"75"
                         }, 
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"zombie"
+                         "value":"robot"
                         }],
                  "rotation":0,
                  "type":"",
@@ -160,7 +174,7 @@
                         {
                          "name":"health",
                          "type":"string",
-                         "value":"50"
+                         "value":"75"
                         }, 
                         {
                          "name":"type",
@@ -182,7 +196,7 @@
         }, 
         {
          "compression":"zlib",
-         "data":"eJxjYBgFQx1MxyE+g66uIB\/MHWgHDACgJG5GQnjhStOjYPACUuKMnvFLa7tGQn7EBtDLMHrVN0OlXgMBAAMJB8M=",
+         "data":"eJxjYBgFQx1MxyE+g4p2zKWiWfQ0e7ACSuJmJIQXrjQ9CgYvICXO6Bm\/tLZrJORHbAC9DKNmfUOKvYMZAABwnQhg",
          "encoding":"base64",
          "height":15,
          "id":6,
@@ -380,7 +394,7 @@
         }, 
         {
          "compression":"zlib",
-         "data":"eJxjYBgFIwXYUMGMViBug+J2KpgHAx1QupOKZlILNABxDRJuxKMWOXzaoGKkhBNMPzXDlhwwWNwxkgAoD1gzoKY1egL0tIse9\/R2D6lgKLgPHVMLlOKRK6GiPeQAkNvy8cjnMZDvxm4sGFkOXS0MlCNhkNsyCOA8ND3EYgCF1CXf",
+         "data":"eJxjYBgFIwXYUMGMViBug+J2KpgHAx1QupNM\/S3UcggW0ADENUi4EY9aSsMHpp+aYUsOGCzuGEkAlAesGVDTGj0BctrFFvf0dg+pYCi4Dx1TC5TikSuhoj3kAJDb8vHI5zGQ78ZuLBhZDl0tDJQjYZDbMgjgPDQ9xGIAylQl3Q==",
          "encoding":"base64",
          "height":15,
          "id":2,
@@ -394,11 +408,11 @@
         }, 
         {
          "compression":"zlib",
-         "data":"eJxjYBgFo2AUjIJRMApGwSjABBU42KToI1dPBRJGV0OO+fQGAK1tBDk=",
+         "data":"eJxjYBgFo2AUjIJRMAqIAxMH2gGjYBQMEQAA1VsAkg==",
          "encoding":"base64",
          "height":15,
-         "id":3,
-         "name":"Background",
+         "id":11,
+         "name":"Foreground",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
@@ -406,7 +420,7 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":11,
+ "nextlayerid":12,
  "nextobjectid":10,
  "orientation":"orthogonal",
  "renderorder":"right-down",

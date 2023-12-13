@@ -36,6 +36,7 @@ class GameView(View):
 
         self.level: int
         self.score: int
+        self.score_on_start: int
         self.keys: list
         self.lock_pairs: dict
 
@@ -104,6 +105,7 @@ class GameView(View):
                 self.lives = 3
             self.level = 1
             self.score = 0
+            self.score_on_start = 0
         self.reset = True
 
         self.camera = arcade.Camera(self.window.width, self.window.height)
@@ -146,16 +148,27 @@ class GameView(View):
         self.scene.draw()
         self.gui_camera.use()
 
-        text1 = f'Score: {self.score}, Level: {self.level}'
-        text2 = f'Lives: {self.lives}, Keys: {self.keys}'
-
+        text = f'LEVEL: {self.level} - LIVES: {self.lives} - SCORE: {self.score}'
         arcade.draw_text(
-            text=text1+', '+text2,
+            text=text,
             start_x=10,
             start_y=10,
             color=arcade.csscolor.BLACK,
             font_size=18
         )
+
+        if len(self.keys) > 0:
+            textrure = arcade.load_texture(
+                KEY_IMAGE_PATH(self.keys[0]),
+                flipped_vertically=True
+            )
+            arcade.draw_texture_rectangle(
+                center_x=SCREEN_WIDTH - 42, 
+                center_y=30,
+                width=64,
+                height=-64,
+                texture=textrure
+            )
 
     def process_keychange(self):
         if self.up_pressed and not self.down_pressed:
@@ -260,7 +273,9 @@ class GameView(View):
             time,
             [
                 LAYER_NAME_PLAYER,
-                LAYER_NAME_ENEMIES
+                LAYER_NAME_ENEMIES,
+                LAYER_NAME_FOREGROUND,
+                LAYER_NAME_FINISH
             ],
         )
 
@@ -344,6 +359,7 @@ class GameView(View):
         
         self.reset = False
         self.lives -= 1
+        self.score = self.score_on_start
         self.setup()
 
     def _process_finish(self):
@@ -354,6 +370,7 @@ class GameView(View):
 
         self.level += 1
         self.reset = False
+        self.score_on_start = self.score
         self.setup()
 
     def _process_coin_pick_up(self, coll):

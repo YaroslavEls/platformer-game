@@ -5,6 +5,20 @@
  "layers":[
         {
          "compression":"zlib",
+         "data":"eJxjYBgFo2AUjIJRMApGwSgYBaNgFJAKjNAwPnXEmDVSAABe1wEt",
+         "encoding":"base64",
+         "height":20,
+         "id":1,
+         "name":"Background",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":40,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "compression":"zlib",
          "data":"eJxjYBgFo2AUjALiAONAO2AUjIJRMApGAUlgoMttMyQ8GIEpEqYFwBb+xIoNZwAAUkYBRw==",
          "encoding":"base64",
          "height":20,
@@ -127,7 +141,7 @@
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"zombie"
+                         "value":"robot"
                         }],
                  "rotation":0,
                  "type":"",
@@ -338,11 +352,11 @@
         }, 
         {
          "compression":"zlib",
-         "data":"eJxjYBgFo2AUjIJRMApGwSgYBaNgFJAKjNAwPnXEmDVSAABe1wEt",
+         "data":"eJztzSEOAAAIxLD7v+PHaDTBkFbOLAEAgKkW7eLNHw389AJF",
          "encoding":"base64",
          "height":20,
-         "id":1,
-         "name":"Background",
+         "id":11,
+         "name":"Foreground",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
@@ -350,7 +364,7 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":11,
+ "nextlayerid":12,
  "nextobjectid":10,
  "orientation":"orthogonal",
  "renderorder":"right-down",
